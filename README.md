@@ -1,2 +1,2 @@
-# PLHomework
-Repo for programming languages homework
+# Домашняя Работа по Языкам Программирования
+Здесь будет выклядываться домашняя работа :)
