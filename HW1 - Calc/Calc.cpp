@@ -1,7 +1,5 @@
 #include "Calc.h"
 
-//Computes given expression and returns result of computation
-//Uses simplified version of Shunting-yard algorithm
 int Calc::compute(string strToCompute) {
     tokenStream.str(strToCompute);
     //Clear all stacks
@@ -25,9 +23,7 @@ int Calc::compute(string strToCompute) {
         }
         else if ((opPriority = isOperator(tmpToken)) != -1) {
             while (isOperator(stackTopWithCheck()) >= opPriority) {
-                if (!performStackComputation(stackTopWithCheck())) {
-                    return -666;
-                }
+                performStackComputation(stackTopWithCheck());
                 stackPopWithCheck();
             }
             operatorStack.push(tmpToken);
@@ -37,41 +33,33 @@ int Calc::compute(string strToCompute) {
         }
         else if (tmpToken == ")") {
             while (stackTopWithCheck() != "(" && !operatorStack.empty()) {
-                if (!performStackComputation(stackTopWithCheck())) {
-                    return -666;
-                }
+                performStackComputation(stackTopWithCheck());
                 stackPopWithCheck();
             }
             if (!operatorStack.empty()) {
                 stackPopWithCheck();
             }
             else {
-                cerr << "Check whether your brackets placed correctly" << endl;
-                return -666;
+                throw runtime_error("Brackets placed incorrectly");
             }
         }
         else {
-            cerr << "Unrecognized token: " << tmpToken << endl;
-            return -666;
+            throw runtime_error("Unrecognized token: " + tmpToken);
         }
     }
     while (!operatorStack.empty()) {
         if (stackTopWithCheck() == "(" || stackTopWithCheck() == ")") {
-            cerr << "Check whether your brackets placed correctly" << endl;
-            return -666;
+            throw runtime_error("Brackets placed incorrectly");
         }
-        if (!performStackComputation(stackTopWithCheck())) {
-            return -666;
-        }
+        performStackComputation(stackTopWithCheck());
         stackPopWithCheck();
     }
     return computeStack.top();
 }
 
-//Checks whether token is number
-bool Calc::isNumber(string strToCheck) {
+bool Calc::isNumber(string token) {
     bool ret = true;
-    for (char i: strToCheck) {
+    for (char i: token) {
         if (!('0' <= i && i <= '9')) {
             ret = false;
             break;
@@ -80,12 +68,11 @@ bool Calc::isNumber(string strToCheck) {
     return ret;
 }
 
-//Checks whether token is operator
-int Calc::isOperator(string strToCheck) {
-    if (strToCheck == "*" || strToCheck == "/" || strToCheck == "%") {
+int Calc::isOperator(string token) {
+    if (token == "*" || token == "/" || token == "%") {
         return 1;
     }
-    else if (strToCheck == "+" || strToCheck == "-") {
+    else if (token == "+" || token == "-") {
         return 0;
     }
     else {
@@ -93,7 +80,6 @@ int Calc::isOperator(string strToCheck) {
     }
 }
 
-//Checks if operatorStack is empty and returns top element of it if not
 string Calc::stackTopWithCheck() {
     if (!operatorStack.empty()) {
         return operatorStack.top();
@@ -103,15 +89,14 @@ string Calc::stackTopWithCheck() {
     }
 }
 
-//Pops element from operatorStack only if it is not empty
 void Calc::stackPopWithCheck() {
     if (!operatorStack.empty()) {
         operatorStack.pop();
     }
 }
 
-//Does basic rpn stack computation returns false if there was division by zero
-bool Calc::performStackComputation(string oper) {
+
+void Calc::performStackComputation(string oper) {
     int a = 0, b = 0;
     b = computeStack.top();
     computeStack.pop();
@@ -128,13 +113,11 @@ bool Calc::performStackComputation(string oper) {
     }
     else if (oper == "/") {
         if (b == 0) {
-            cerr << "Division by zero" << endl;
-            return false;
+            throw runtime_error("Division by zero");
         }
         computeStack.push(a / b);
     }
     else if (oper == "%") {
         computeStack.push(a % b);
     }
-    return true;
 }
