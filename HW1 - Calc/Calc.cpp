@@ -98,6 +98,10 @@ void Calc::stackPopWithCheck() {
 
 void Calc::performStackComputation(string oper) {
     int a = 0, b = 0;
+    if (computeStack.size() < 2)
+    {
+        throw runtime_error("Something went wrong");
+    }
     b = computeStack.top();
     computeStack.pop();
     a = computeStack.top();
