@@ -122,6 +122,9 @@ void Calc::performStackComputation(string oper) {
         computeStack.push(a / b);
     }
     else if (oper == "%") {
+        if (b == 0) {
+            throw runtime_error("Division by zero");
+        }
         computeStack.push(a % b);
     }
 }
