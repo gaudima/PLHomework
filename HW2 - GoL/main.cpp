@@ -18,6 +18,14 @@ float getFPS(const sf::Time& time) {
 int main()
 {
     srand(time(NULL));
+    Gol gol(10,10,30,2);
+    gol.debugOut();
+    for(int i = 0; i < 10; i++)
+    {
+        gol.cycle();
+        cout<<endl;
+        gol.debugOut();
+    }
     sf::RenderWindow window(sf::VideoMode(800,600), "GameOfLife", sf::Style::Close);
     bool paused = false;
     GolDrawCell cell;
