@@ -13,43 +13,38 @@ void Gol::cycle()
     {
         fld[i] = new uint8_t[_width]();
     }
-    for(int i = 1; i < _height-1; i++)
+    for(int i = 1; i < _height - 1; i++)
     {
-        for(int j=1; j < _width-1; j++)
+        for(int j=1; j < _width - 1; j++)
         {
             int neib=0;
             for(int k = -1; k < 2; k++)
             {
                 for(int l = -1; l < 2; l++)
                 {
-                    if(k!=l && l!=0)
+                    if(!(k==0 && l==0))
                     {
                         neib+=_field[i+k][j+l];
                     }
                 }
             }
-            cout<<neib<<endl;
-            if(_field[i][j] == 0)
+            if(_field[i][j])
             {
-                if(neib == 3)
+                if(neib == 2 || neib == 3)
                 {
                     fld[i][j] = 1;
                 }
             }
             else
             {
-                if(neib==2 || neib==3)
+                if(neib == 3)
                 {
-                    fld[i][j]==1;
-                }
-                else
-                {
-                    fld[i][j]==0;
+                    fld[i][j] = 1;
                 }
             }
         }
     }
-
+    _mutex.lock();
     for(int i = 0; i < _height; i++)
     {
         delete [] _field[i];
@@ -58,39 +53,66 @@ void Gol::cycle()
 
     _field = fld;
     checkResize();
+    _mutex.unlock();
+}
+
+void Gol::run()
+{
+    while(!_stopped)
+    {
+        if(!_paused)
+        {
+            sleep(1);
+            cycle();
+        }
+    }
+}
+
+void Gol::pause()
+{
+    cout<<"pausing"<<endl;
+    _paused=!_paused;
+}
+
+void Gol::stop()
+{
+    cout<<"stopping"<<endl;
+    _stopped=true;
 }
 
 void Gol::checkResize()
 {
-    bool rLeft = false, rRight=false, rTop=false, rBottom=false;
-    for(int i = 0; i<_height; i++)
+    bool rLeft = false, rRight = false, rTop = false, rBottom = false;
+    for(int i = 0; i < _height; i++)
     {
-        if(_field[i][1]==1)
+        if(_field[i][1] == 1)
         {
-            rLeft=true;
+            rLeft = true;
         }
-        if(_field[i][_width-2]==1)
+        if(_field[i][_width - 2] == 1)
         {
-            rRight=true;
+            rRight = true;
         }
     }
-    for(int i = 0; i<_width; i++)
+    for(int i = 0; i < _width; i++)
     {
-        if(_field[1][i]==1)
+        if(_field[1][i] == 1)
         {
-            rTop=true;
+            rTop = true;
         }
-        if(_field[_height-2][i]==1)
+        if(_field[_height - 2][i] == 1)
         {
-            rBottom=true;
+            rBottom = true;
         }
     }
-
+    int offsetX = 0;
+    int offsetY = 0;
     int height = _height;
     int width = _width;
     if(rLeft)
     {
-        _offsetX=2;
+        offsetX=1;
+        _drawingOffsetX+=1;
         width+=1;
     }
     if(rRight)
@@ -99,17 +121,18 @@ void Gol::checkResize()
     }
     if(rTop)
     {
-        _offsetY=2;
+        offsetY=1;
+        _drawingOffsetY+=1;
         height+=1;
     }
     if(rBottom)
     {
         height+=1;
     }
-    resize(width, height);
+    resize(width, height, offsetY, offsetX);
 }
 
-void Gol::resize(int width, int height)
+void Gol::resize(int width, int height, int offsetX, int offsetY)
 {
     uint8_t **fld = new uint8_t*[height];
     for(int i = 0; i < height; i++)
@@ -121,7 +144,7 @@ void Gol::resize(int width, int height)
     {
         for(int j = 0; j < _width; j++)
         {
-                fld[_offsetY + i][_offsetX + j] = _field[i][j];
+                fld[offsetY + i][offsetX + j] = _field[i][j];
         }
     }
 
@@ -181,6 +204,83 @@ void Gol::debugOut()
             cout<<(int)_field[i][j]<<" ";
         }
         cout<<endl;
+    }
+}
+
+void Gol::draw(sf::RenderWindow &window)
+{
+    GolDrawCell cell;
+    cell.setSize(_cellSize);
+    _mutex.lock();
+    for(int i = 1; i < _height - 1 ; i++)
+    {
+        for(int j = 1; j < _width - 1 ; j++)
+        {
+            cell.setInnerCellsVisible(_field[i][j]);
+            sf::Vector2f position(_cellSize * j - _drawingOffsetX * _cellSize, _cellSize * i + 40 - _drawingOffsetY * _cellSize);
+            cell.setPosition(position);
+            sf::FloatRect screenRect(-_cellSize, 40, 800 + _cellSize * 2 , 600 + _cellSize * 2);
+            if(screenRect.contains(position))
+            {
+                window.draw(cell);
+            }
+        }
+    }
+    _mutex.unlock();
+}
+
+void Gol::processEvent(sf::Event event)
+{
+    if(event.type == sf::Event::MouseButtonPressed)
+    {
+        if(event.mouseButton.y>_cellSize)
+        {
+            int fieldX = event.mouseButton.x / _cellSize + _drawingOffsetX;
+            int fieldY = (event.mouseButton.y - 40) / _cellSize + _drawingOffsetY;
+            cout<<fieldX<<" "<<fieldY<<endl;
+            if(_field[fieldY][fieldX])
+            {
+                _field[fieldY][fieldX] = 0;
+            }
+            else
+            {
+                _field[fieldY][fieldX] = 1;
+            }
+        }
+    }
+    else if(event.type == sf::Event::MouseWheelMoved)
+    {
+        if(event.mouseWheel.delta>0)
+        {
+            zoomIn();
+        }
+        else
+        {
+            zoomOut();
+        }
+    }
+    else if(event.type == sf::Event::KeyPressed)
+    {
+        switch(event.key.code)
+        {
+            case sf::Keyboard::Up:     if(_drawingOffsetY>0) _drawingOffsetY-=1; break;
+            case sf::Keyboard::Down:   _drawingOffsetY+=1; break;
+            case sf::Keyboard::Left:   if(_drawingOffsetX>0) _drawingOffsetX-=1; break;
+            case sf::Keyboard::Right:  _drawingOffsetX+=1; break;
+        }
+    }
+}
+
+void Gol::zoomIn()
+{
+    _cellSize+=1;
+}
+
+void Gol::zoomOut()
+{
+    if(_cellSize>5)
+    {
+        _cellSize-=1;
     }
 }
 
