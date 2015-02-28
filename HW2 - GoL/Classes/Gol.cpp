@@ -12,35 +12,33 @@ void Gol::cycle() {
     checkResize();
     _mutex.unlock();
 
-    uint8_t** new_field = new uint8_t* [_height];
-    for(int i = 0; i < _height; i++) {
+    uint8_t **new_field = new uint8_t *[_height];
+    for (int i = 0; i < _height; i++) {
         new_field[i] = new uint8_t[_width]();
     }
 
-    for(int i = 0; i < _height; i++) {
-        for(int j = 0; j < _width; j++) {
-            if(_field[i][j]) {
+    for (int i = 0; i < _height; i++) {
+        for (int j = 0; j < _width; j++) {
+            if (_field[i][j]) {
                 int neighbours = _field[i][j] >> 4;
-                if(_field[i][j] & 0x01)
-                {
-                    if(neighbours == 3 || neighbours == 2) {
+                if (_field[i][j] & 0x01) {
+                    if (neighbours == 3 || neighbours == 2) {
                         new_field[i][j] = new_field[i][j] | 0x01;
                     } else {
                         _died += 1;
                     }
                 } else {
-                    if(neighbours == 3) {
+                    if (neighbours == 3) {
                         _born += 1;
                         new_field[i][j] = new_field[i][j] | 0x01;
                     }
                 }
-                if(new_field[i][j] & 0x01)
-                {
-                    for(int k = -1; k < 2; k++) {
-                        for(int l = -1; l < 2; l++) {
-                            if(i + k >= 0 && i + k < _height &&
-                               j + l >= 0 && j + l < _width &&
-                               !(k == 0 && l == 0)) {
+                if (new_field[i][j] & 0x01) {
+                    for (int k = -1; k < 2; k++) {
+                        for (int l = -1; l < 2; l++) {
+                            if (i + k >= 0 && i + k < _height &&
+                                    j + l >= 0 && j + l < _width &&
+                                    !(k == 0 && l == 0)) {
                                 new_field[i + k][j + l] += 0x10;
                             }
                         }
@@ -51,24 +49,23 @@ void Gol::cycle() {
     }
 
     _mutex.lock();
-    for(int i = 0; i < _height; i++) {
-        delete [] _field[i];
+    for (int i = 0; i < _height; i++) {
+        delete[] _field[i];
     }
-    delete [] _field;
+    delete[] _field;
     _field = new_field;
     _mutex.unlock();
 }
 
 void Gol::run() {
     while (!_stopped) {
-        if(_paused && _nOfSteps == -1) {
+        if (_paused && _nOfSteps == -1) {
             _delayTimer.restart();
         }
 
-        if(_delayTimer.getElapsedTime().asMilliseconds() >= _refreshDelay) {
+        if (_delayTimer.getElapsedTime().asMilliseconds() >= _refreshDelay) {
             cycle();
-            if(_nOfSteps > -1)
-            {
+            if (_nOfSteps > -1) {
                 _nOfSteps -= 1;
             }
             _delayTimer.restart();
@@ -93,50 +90,48 @@ void Gol::stop() {
 void Gol::checkResize() {
 
     //flags are set to true if field should be resized in on of directions
-    bool rTop    = false,
-         rBottom = false,
-         rLeft   = false,
-         rRight  = false;
+    bool rTop = false,
+            rBottom = false,
+            rLeft = false,
+            rRight = false;
 
-    int new_width  = _width,
-        new_height = _height,
-        offsetX    = 0,
-        offsetY    = 0;
+    int new_width = _width,
+            new_height = _height,
+            offsetX = 0,
+            offsetY = 0;
 
-    for(int i = 0; i < _height; i++)
-    {
-        if(_field[i][0] & 0x01) {
+    for (int i = 0; i < _height; i++) {
+        if (_field[i][0] & 0x01) {
             rLeft = true;
         }
-        if(_field[i][_width - 1] & 0x01) {
+        if (_field[i][_width - 1] & 0x01) {
             rRight = true;
         }
     }
 
-    for(int i = 0; i < _width; i++)
-    {
-        if(_field[0][i] & 0x01) {
+    for (int i = 0; i < _width; i++) {
+        if (_field[0][i] & 0x01) {
             rTop = true;
         }
-        if(_field[_height - 1][i] & 0x01) {
+        if (_field[_height - 1][i] & 0x01) {
             rBottom = true;
         }
     }
 
-    if(rTop) {
+    if (rTop) {
         offsetY = 1;
         new_height += 1;
-        _drawingOffsetY +=1;
+        _drawingOffsetY += 1;
     }
-    if(rBottom) {
+    if (rBottom) {
         new_height += 1;
     }
-    if(rLeft) {
+    if (rLeft) {
         offsetX = 1;
         new_width += 1;
-        _drawingOffsetX +=1;
+        _drawingOffsetX += 1;
     }
-    if(rRight) {
+    if (rRight) {
         new_width += 1;
     }
     resize(new_width, new_height, offsetX, offsetY);
@@ -144,7 +139,7 @@ void Gol::checkResize() {
 
 void Gol::resize(int width, int height, int offsetX, int offsetY) {
 
-    uint8_t** new_field = new uint8_t* [height];
+    uint8_t **new_field = new uint8_t *[height];
     for (int i = 0; i < height; i++) {
         new_field[i] = new uint8_t[width]();
     }
@@ -193,9 +188,9 @@ void Gol::fill(int population) {
         population -= 1;
     }
 
-    for(int i = 0; i < _height; i++) {
-        for(int j = 0; j < _width; j++) {
-            if(_field[i][j] & 1) {
+    for (int i = 0; i < _height; i++) {
+        for (int j = 0; j < _width; j++) {
+            if (_field[i][j] & 1) {
                 for (int k = -1; k < 2; k++) {
                     for (int l = -1; l < 2; l++) {
                         if (i + k >= 0 && i + k < _height &&
@@ -243,7 +238,7 @@ void Gol::draw(sf::RenderWindow &window) {
 }
 
 void Gol::putCell(int x, int y) {
-    if(_field[y][x] & 0x01) {
+    if (_field[y][x] & 0x01) {
         _field[y][x] -= 0x01;
         for (int k = -1; k < 2; k++) {
             for (int l = -1; l < 2; l++) {
@@ -324,8 +319,7 @@ void Gol::clear() {
 }
 
 void Gol::faster() {
-    if(_refreshDelay > 40)
-    {
+    if (_refreshDelay > 40) {
         _refreshDelay -= 20;
     }
 }
@@ -339,9 +333,9 @@ long Gol::getBorn() {
 }
 
 double Gol::getBornDied() {
-    if(_died != 0) {
-        return (double)_born/(double)_died;
+    if (_died != 0) {
+        return (double) _born / (double) _died;
     } else {
-        return (double)(_born)/1;
+        return (double) (_born) / 1;
     }
 }

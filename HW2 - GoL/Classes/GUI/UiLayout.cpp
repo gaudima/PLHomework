@@ -9,35 +9,34 @@ UiLayout::UiLayout(Gol *gol) {
 
     _ibtZoomIn.setImage("Resources/icons/zoom-in.png");
     _ibtZoomIn.setPosition(sf::Vector2f(485, 5));
-    _ibtZoomIn.onClick([&](){
+    _ibtZoomIn.onClick([&]() {
         _gol->zoomIn();
     });
 
     _ibtZoomOut.setImage("Resources/icons/zoom-out.png");
     _ibtZoomOut.setPosition(sf::Vector2f(460, 5));
-    _ibtZoomOut.onClick([&](){
+    _ibtZoomOut.onClick([&]() {
         _gol->zoomOut();
     });
 
     _ibtFaster.setImage("Resources/icons/faster.png");
     _ibtFaster.setPosition(sf::Vector2f(485, 30));
-    _ibtFaster.onClick([&](){
+    _ibtFaster.onClick([&]() {
         _gol->faster();
     });
 
     _ibtSlower.setImage("Resources/icons/slower.png");
     _ibtSlower.setPosition(sf::Vector2f(460, 30));
-    _ibtSlower.onClick([&](){
+    _ibtSlower.onClick([&]() {
         _gol->slower();
     });
 
     _tbtGenPopulation.setText("Gen");
     _tbtGenPopulation.setPosition(sf::Vector2f(285, 30));
     _tbtGenPopulation.setSize(sf::Vector2f(40, 20));
-    _tbtGenPopulation.onClick([&](){
+    _tbtGenPopulation.onClick([&]() {
         string popul = _tbxPopulation.getText();
-        if(popul.size()!=0)
-        {
+        if (popul.size() != 0) {
             _gol->clear();
             _gol->fill(stoi(popul));
         }
@@ -46,29 +45,29 @@ UiLayout::UiLayout(Gol *gol) {
     _tbtRunNCycles.setText("Run");
     _tbtRunNCycles.setPosition(sf::Vector2f(395, 30));
     _tbtRunNCycles.setSize(sf::Vector2f(40, 20));
-    _tbtRunNCycles.onClick([&](){
+    _tbtRunNCycles.onClick([&]() {
         string nOfCycles = _tbxSteps.getText();
-        if(nOfCycles.size()!=0) {
+        if (nOfCycles.size() != 0) {
             _gol->runNumOfSteps(stoi(nOfCycles));
         }
     });
 
     _tbtCreateField.setText("Create field");
     _tbtCreateField.setPosition(sf::Vector2f(110, 30));
-    _tbtCreateField.onClick([&](){
-        string width  = _tbxWidth.getText(),
-               height = _tbxHeight.getText();
-        if(width.size()!=0 && height.size()!=0) {
+    _tbtCreateField.onClick([&]() {
+        string width = _tbxWidth.getText(),
+                height = _tbxHeight.getText();
+        if (width.size() != 0 && height.size() != 0) {
             _gol->create(stoi(width), stoi(height));
         }
     });
 
     _tbtPlayPause.setImage("Resources/icons/play.png");
     _tbtPlayPause.setPosition(sf::Vector2f(510, 5));
-    _tbtPlayPause.setSize(sf::Vector2f(45,45));
-    _tbtPlayPause.onClick([&](){
+    _tbtPlayPause.setSize(sf::Vector2f(45, 45));
+    _tbtPlayPause.onClick([&]() {
         _gol->pause();
-        if(_gol->getPaused()) {
+        if (_gol->getPaused()) {
             _tbtPlayPause.setImage("Resources/icons/play.png");
         } else {
             _tbtPlayPause.setImage("Resources/icons/pause.png");
@@ -81,12 +80,12 @@ UiLayout::UiLayout(Gol *gol) {
     _txtFieldSize.setFont(_font);
     _txtFieldSize.setCharacterSize(16);
     _txtFieldSize.setString("Field size:");
-    _txtFieldSize.setPosition(sf::Vector2f(5,5));
+    _txtFieldSize.setPosition(sf::Vector2f(5, 5));
 
     _txtPopulation.setFont(_font);
     _txtPopulation.setCharacterSize(16);
     _txtPopulation.setString("Population:");
-    _txtPopulation.setPosition(sf::Vector2f(240,5));
+    _txtPopulation.setPosition(sf::Vector2f(240, 5));
 
     _txtX.setFont(_font);
     _txtX.setCharacterSize(16);
@@ -103,8 +102,7 @@ UiLayout::UiLayout(Gol *gol) {
     _txtStats.setPosition(sf::Vector2f(580, 5));
 }
 
-void UiLayout::processEvent(sf::Event &event)
-{
+void UiLayout::processEvent(sf::Event &event) {
     _tbxWidth.processEvent(event);
     _tbxHeight.processEvent(event);
     _tbxSteps.processEvent(event);
@@ -118,6 +116,7 @@ void UiLayout::processEvent(sf::Event &event)
     _tbxPopulation.processEvent(event);
     _tbtGenPopulation.processEvent(event);
 }
+
 void UiLayout::draw(sf::RenderWindow &window) {
 
     window.draw(_tbxWidth);

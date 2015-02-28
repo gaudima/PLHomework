@@ -70,8 +70,8 @@ private:
     bool _stopped = false;
     float _cellSize = 40;
     int _nOfSteps = -1;
-    long _born=0;
-    long _died=0;
+    long _born = 0;
+    long _died = 0;
 
 };
 

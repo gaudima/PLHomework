@@ -11,7 +11,9 @@ class UiLayout {
 
 public:
     UiLayout(Gol *gol);
+
     void processEvent(sf::Event &event);
+
     void draw(sf::RenderWindow &window);
 
 private:
