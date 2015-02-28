@@ -4,54 +4,39 @@
 #include <random>
 #include <ctime>
 #include "Gol.h"
-#include "GolDrawCell.h"
-#include "TextBox.h"
-#include "TextButton.h"
-#include "ImageButton.h"
-#include "unistd.h"
+#include "UiLayout.h"
 
 using namespace std;
 
-float getFPS(const sf::Time& time) {
-     return (1000000.0f / time.asMicroseconds());
+float getFPS(const sf::Time &time) {
+    return (1000000.0f / time.asMicroseconds());
 }
 
-int main()
-{
+int main() {
     srand(time(NULL));
-    Gol gol(10,10,30,2);
-    sf::Thread GolCycleTread([&](){gol.run();});
-    sf::RenderWindow window(sf::VideoMode(800,600), "GameOfLife", sf::Style::Close);
-    TextBox tBox;
-    TextButton tButton("Button");
-    ImageButton iButton("Resources/icons/pause.png");
-    iButton.onClick([&](){gol.pause();});
-    iButton.setPosition(sf::Vector2f(150,0));
-    tButton.setPosition(sf::Vector2f(50,0));
-    sf::Clock Clock;
+    Gol gol(10, 10, 30, 2);
+    sf::Thread GolCycleTread([&]() {
+        gol.run();
+    });
+    sf::RenderWindow window(sf::VideoMode(800, 600), "GameOfLife", sf::Style::Close);
+    UiLayout layout(&gol);
+    sf::Clock clock;
     GolCycleTread.launch();
-    while (window.isOpen())
-    {
+    while (window.isOpen()) {
         sf::Event event;
-        while(window.pollEvent(event))
-        {
-            if(event.type == sf::Event::Closed)
-            {
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
                 gol.stop();
                 window.close();
             }
-            tBox.processEvent(event);
-            tButton.processEvent(event);
-            iButton.processEvent(event);
+            layout.processEvent(event);
             gol.processEvent(event);
         }
-        window.clear(sf::Color(25,25,25));
+        window.clear(sf::Color(25, 25, 25));
         gol.draw(window);
-        window.draw(tButton);
-        window.draw(tBox);
-        window.draw(iButton);
+        layout.draw(window);
         window.display();
-        window.setTitle("GameOfLife FPS:" + to_string(getFPS(Clock.restart())));
+        window.setTitle("GameOfLife FPS:" + to_string(getFPS(clock.restart())));
     }
     return 0;
 }

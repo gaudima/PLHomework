@@ -6,20 +6,26 @@
 
 using namespace std;
 
-class TextBox : public sf::Drawable
-{
+class TextBox : public sf::Drawable {
 public:
     TextBox();
+
     TextBox(string text);
+
     void setText(string text);
+
     void setSize(sf::Vector2f size);
+
     void setPosition(sf::Vector2f position);
+
     void setActive(bool active);
-    void processEvent(sf::Event event);
+
+    void processEvent(sf::Event &event);
+
     string getText();
+
 private:
-    virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const
-    {
+    virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const {
         target.draw(_outerBox, states);
         target.draw(_text, states);
     }

@@ -8,28 +8,34 @@
 
 using namespace std;
 
-class ImageButton : public sf::Drawable
-{
+class ImageButton : public sf::Drawable {
 public:
     ImageButton();
+
     ImageButton(string path);
+
     void setImage(string path);
+
     void setSize(sf::Vector2f size);
+
     void setPosition(sf::Vector2f position);
-    void processEvent(sf::Event event);
+
+    void processEvent(sf::Event &event);
+
     void onClick(function<void()> callback);
 
 private:
-    virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const
-    {
+    virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const {
         target.draw(_outerBox, states);
         target.draw(_sprite, states);
     }
 
     void init();
+
     sf::Sprite _sprite;
     sf::Texture _texture;
     sf::RectangleShape _outerBox;
+    sf::Vector2f _size;
     function<void()> _callback;
 
 };
