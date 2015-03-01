@@ -14,7 +14,7 @@ float getFPS(const sf::Time &time) {
 
 int main() {
     srand(time(NULL));
-    Gol gol(10, 10, 30, 2);
+    Gol gol(10, 10, 30);
     sf::Thread GolCycleTread([&]() {
         gol.run();
     });

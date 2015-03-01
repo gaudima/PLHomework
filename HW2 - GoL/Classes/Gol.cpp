@@ -1,7 +1,9 @@
 #include "Gol.h"
 
-Gol::Gol(int width, int height, int populated, int cycles) {
+Gol::Gol(int width, int height, int populated) {
     create(width, height);
+    _drawField.setCellSize(_cellSize);
+    _drawField.setPosition(sf::Vector2f(0, 61));
     fill(populated);
 }
 
@@ -64,7 +66,9 @@ void Gol::run() {
         }
 
         if (_delayTimer.getElapsedTime().asMilliseconds() >= _refreshDelay) {
+            _mClock.restart();
             cycle();
+            cout<<"Cycle Time: "<<_mClock.restart().asMicroseconds()<<endl;
             if (_nOfSteps > -1) {
                 _nOfSteps -= 1;
             }
@@ -135,6 +139,7 @@ void Gol::checkResize() {
         new_width += 1;
     }
     resize(new_width, new_height, offsetX, offsetY);
+    _drawField.setOffset(_drawingOffsetX, _drawingOffsetY);
 }
 
 void Gol::resize(int width, int height, int offsetX, int offsetY) {
@@ -161,6 +166,8 @@ void Gol::resize(int width, int height, int offsetX, int offsetY) {
 }
 
 void Gol::create(int width, int height) {
+    _drawingOffsetX=0;
+    _drawingOffsetY=0;
     _field = new uint8_t *[height];
     for (int i = 0; i < height; i++) {
         _field[i] = new uint8_t[width]();
@@ -219,21 +226,28 @@ void Gol::runNumOfSteps(int num) {
 }
 
 void Gol::draw(sf::RenderWindow &window) {
-    GolDrawCell cell;
-    sf::FloatRect screenRect(-_cellSize, 60, 800 + _cellSize * 2, 600 + _cellSize * 2);
-    cell.setSize(_cellSize);
+//    GolDrawCell cell;
+//    sf::FloatRect screenRect(-_cellSize, 60, 800 + _cellSize * 2, 600 + _cellSize * 2);
+//    cell.setSize(_cellSize);
     _mutex.lock();
-    float drawX = 0, drawY = 0;
-    for (int i = 0; i < _height; i++) {
-        for (int j = 0; j < _width; j++) {
-            sf::Vector2f position(_cellSize * j - _drawingOffsetX * _cellSize, _cellSize * i + 60 - _drawingOffsetY * _cellSize);
-            if (screenRect.contains(position)) {
-                cell.setInnerCellsVisible(_field[i][j] & 0x01);
-                cell.setPosition(position);
-                window.draw(cell);
-            }
-        }
-    }
+//    //_rTexture.clear(sf::Color(25, 25, 25));
+//    for (int i = 0; i < _height; i++) {
+//        for (int j = 0; j < _width; j++) {
+//            sf::Vector2f position(_cellSize * j - _drawingOffsetX * _cellSize, _cellSize * i + 60 - _drawingOffsetY * _cellSize);
+//            if (screenRect.contains(position)) {
+//                cell.setInnerCellsVisible(_field[i][j] & 0x01);
+//                cell.setPosition(position);
+//                window.draw(cell);
+//            }
+//        }
+//    }
+    //_rTexture.display();
+    //sf::Sprite spr(_rTexture.getTexture());
+    //window.draw(spr);
+
+    _drawField.updateWithField(_field, _width, _height);
+
+    window.draw(_drawField);
     _mutex.unlock();
 }
 
@@ -285,29 +299,32 @@ void Gol::processEvent(sf::Event event) {
     else if (event.type == sf::Event::KeyPressed) {
         switch (event.key.code) {
             case sf::Keyboard::Up:
-                if (_drawingOffsetY > 0) _drawingOffsetY -= 1;
+                _drawingOffsetY -= 1;
                 break;
             case sf::Keyboard::Down:
                 _drawingOffsetY += 1;
                 break;
             case sf::Keyboard::Left:
-                if (_drawingOffsetX > 0) _drawingOffsetX -= 1;
+                _drawingOffsetX -= 1;
                 break;
             case sf::Keyboard::Right:
                 _drawingOffsetX += 1;
                 break;
         }
+        _drawField.setOffset(_drawingOffsetX, _drawingOffsetY);
     }
 }
 
 void Gol::zoomIn() {
     _cellSize += 1;
+    _drawField.setCellSize(_cellSize);
 }
 
 void Gol::zoomOut() {
     if (_cellSize > 5) {
         _cellSize -= 1;
     }
+    _drawField.setCellSize(_cellSize);
 }
 
 void Gol::clear() {

@@ -6,14 +6,14 @@
 #include <iostream>
 #include <ctime>
 #include <SFML/Graphics.hpp>
-#include "GolDrawCell.h"
+#include "GolDrawField.h"
 #include <unistd.h>
 
 using namespace std;
 
 class Gol {
 public:
-    Gol(int width, int height, int populated, int cycles);
+    Gol(int width, int height, int populated);
 
     void cycle();
 
@@ -60,6 +60,8 @@ private:
 
     sf::Mutex _mutex;
     sf::Clock _delayTimer;
+    sf::Clock _mClock;
+    GolDrawField _drawField;
     uint8_t **_field;
     int _refreshDelay = 500;
     int _height = 0;

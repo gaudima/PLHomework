@@ -17,7 +17,7 @@ public:
     void draw(sf::RenderWindow &window);
 
 private:
-
+    sf::RectangleShape _background;
     TextBox _tbxWidth;
     TextBox _tbxHeight;
     TextBox _tbxPopulation;

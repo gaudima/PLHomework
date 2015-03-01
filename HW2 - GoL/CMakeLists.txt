@@ -2,7 +2,7 @@ project(GameOfLife)
 cmake_minimum_required(VERSION 2.8)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 include_directories(./Classes ./Classes/GUI)
-set(SRC_LIST ./main.cpp ./Classes/Gol.cpp ./Classes/GolDrawCell.cpp ./Classes/GUI/TextBox.cpp ./Classes/GUI/TextButton.cpp ./Classes/GUI/ImageButton.cpp ./Classes/GUI/UiLayout.cpp)
+set(SRC_LIST ./main.cpp ./Classes/Gol.cpp ./Classes/GolDrawField.cpp ./Classes/GUI/TextBox.cpp ./Classes/GUI/TextButton.cpp ./Classes/GUI/ImageButton.cpp ./Classes/GUI/UiLayout.cpp)
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})

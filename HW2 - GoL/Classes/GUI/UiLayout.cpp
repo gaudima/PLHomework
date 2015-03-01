@@ -2,6 +2,9 @@
 
 UiLayout::UiLayout(Gol *gol) {
     _gol = gol;
+    _background.setFillColor(sf::Color(0,0,0));
+    _background.setPosition(sf::Vector2f(0,0));
+    _background.setSize(sf::Vector2f(800,60));
     _tbxWidth.setPosition(sf::Vector2f(5, 30));
     _tbxHeight.setPosition(sf::Vector2f(65, 30));
     _tbxPopulation.setPosition(sf::Vector2f(240, 30));
@@ -118,7 +121,7 @@ void UiLayout::processEvent(sf::Event &event) {
 }
 
 void UiLayout::draw(sf::RenderWindow &window) {
-
+    window.draw(_background);
     window.draw(_tbxWidth);
     window.draw(_tbxHeight);
     window.draw(_tbxPopulation);
