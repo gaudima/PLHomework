@@ -61,6 +61,9 @@ void Gol::cycle() {
 
 void Gol::run() {
     while (!_stopped) {
+        if (_nOfSteps > -1) {
+            _paused = true;
+        }
         if (_paused && _nOfSteps == -1) {
             _delayTimer.restart();
         }
@@ -226,27 +229,8 @@ void Gol::runNumOfSteps(int num) {
 }
 
 void Gol::draw(sf::RenderWindow &window) {
-//    GolDrawCell cell;
-//    sf::FloatRect screenRect(-_cellSize, 60, 800 + _cellSize * 2, 600 + _cellSize * 2);
-//    cell.setSize(_cellSize);
     _mutex.lock();
-//    //_rTexture.clear(sf::Color(25, 25, 25));
-//    for (int i = 0; i < _height; i++) {
-//        for (int j = 0; j < _width; j++) {
-//            sf::Vector2f position(_cellSize * j - _drawingOffsetX * _cellSize, _cellSize * i + 60 - _drawingOffsetY * _cellSize);
-//            if (screenRect.contains(position)) {
-//                cell.setInnerCellsVisible(_field[i][j] & 0x01);
-//                cell.setPosition(position);
-//                window.draw(cell);
-//            }
-//        }
-//    }
-    //_rTexture.display();
-    //sf::Sprite spr(_rTexture.getTexture());
-    //window.draw(spr);
-
     _drawField.updateWithField(_field, _width, _height);
-
     window.draw(_drawField);
     _mutex.unlock();
 }

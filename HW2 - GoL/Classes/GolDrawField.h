@@ -6,10 +6,19 @@
 
 class GolDrawField : public sf::Drawable {
 public:
+    //Constructor
     GolDrawField();
+
+    //Update current field with field array
     void updateWithField(uint8_t** &golFieldArray, int width, int height);
+
+    //Set size of cell in pixels
     void setCellSize(float cellSize);
+
+    //Set position of drawing in pixels
     void setPosition(sf::Vector2f position);
+
+    //Set drawing offset in cells
     void setOffset(int offsetX, int offsetY);
 
 private:
