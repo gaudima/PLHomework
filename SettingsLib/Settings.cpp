@@ -1,4 +1,4 @@
-#include "settings.h"
+#include "Settings.h"
 settings::param::param() {
 
 }

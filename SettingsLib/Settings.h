@@ -1,5 +1,5 @@
-#ifndef settings_H
-#define settings_H
+#ifndef SETTINGS_H
+#define SETTINGS_H
 
 #include <fstream>
 #include <map>
@@ -136,4 +136,4 @@ private:
     void serialize();
 };
 
-#endif // settings_H
+#endif // SETTINGS_H
