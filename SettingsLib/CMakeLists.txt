@@ -1,0 +1,5 @@
+project(SettingsLib)
+cmake_minimum_required(VERSION 2.8)
+set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+set(SRC_LIST ./Settings.cpp)
+add_library(settings SHARED ${SRC_LIST})
