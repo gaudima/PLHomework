@@ -1,6 +1,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include <iostream>
 #include <fstream>
 #include <map>
 #include <sstream>
@@ -26,56 +27,23 @@ public:
             return *this;
         }
 
-        template <typename T>
-        param & operator=(T const &param) {
-            conv << std::boolalpha << param;
-            conv >> std::boolalpha >> value;
-            return *this;
-        }
+        param & operator=(std::string const &);
+        param & operator=(int);
+        param & operator=(bool);
+        param & operator=(double);
 
-        template <typename T>
-        param & operator+=(T const &param) {
-            T tmp;
-            conv << std::boolalpha << value;
-            conv >> std::boolalpha >> tmp;
-            tmp += param;
-            conv << std::boolalpha << tmp;
-            conv >> std::boolalpha >> value;
-            return *this;
-        }
+        param & operator+=(std::string const &);
+        param & operator+=(int);
+        param & operator+=(double);
 
-        template <typename T>
-        param & operator-=(T param) {
-            T tmp;
-            conv << std::boolalpha << value;
-            conv >> std::boolalpha >> tmp;
-            tmp -= param;
-            conv << std::boolalpha << tmp;
-            conv >> std::boolalpha >> value;
-            return *this;
-        }
+        param & operator-=(int);
+        param & operator-=(double);
 
-        template <typename T>
-        param & operator*=(T param) {
-            T tmp;
-            conv << std::boolalpha << value;
-            conv >> std::boolalpha >> tmp;
-            tmp *= param;
-            conv << std::boolalpha << tmp;
-            conv >> std::boolalpha >> value;
-            return *this;
-        }
+        param & operator*=(int);
+        param & operator*=(double);
 
-        template <typename T>
-        param & operator/=(T param) {
-            T tmp;
-            conv << std::boolalpha << value;
-            conv >> std::boolalpha >> tmp;
-            tmp /= param;
-            conv << std::boolalpha << tmp;
-            conv >> std::boolalpha >> value;
-            return *this;
-        }
+        param & operator/=(int);
+        param & operator/=(double);
 
         param & operator|=(bool param);
 
@@ -98,7 +66,7 @@ public:
          * \param def Default setting value
          * \return Stored value for given name or default value
          */
-    std::string const & get(std::string const & name,
+    std::string const get(std::string const & name,
                             std::string const & def = "") const;
     /**
          * Set or replace setting value and save changes to file
@@ -122,12 +90,12 @@ public:
          * Get constant setting wrapper
          * \param name Setting unique identifier
          */
-    const param operator[](std::string const & name) const;
+    const param & operator[](std::string const & name) const;
     /**
          * Get constant setting wrapper
          * \param name Setting unique identifier
          */
-    param operator[](std::string const & name);
+    param & operator[](std::string const & name);
 
 private:
     std::map<std::string, param> sett;
