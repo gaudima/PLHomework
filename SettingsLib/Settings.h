@@ -5,18 +5,42 @@
 #include <fstream>
 #include <map>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 
-class settings {
+class no_such_param : public std::runtime_error {
 public:
+    no_such_param(std::string const &name);
+};
+
+class cant_convert_to : public std::runtime_error {
+public:
+    cant_convert_to(std::string const &name, std::string const &type);
+};
+
+class incompatible_operands : public std::runtime_error {
+public:
+    incompatible_operands(std::string const &name, std::string const &op, std::string const &type);
+};
+
+class settings {
+
+private:
+    std::map<std::string, std::string> sett;
+    std::string path;
+    void deserialize();
+    void serialize();
+
     class param {
+        friend class settings;
     private:
         param(param const &);
+        param(std::string nam, std::string  val, settings *par);
         std::string value;
+        std::string name;
         std::stringstream conv;
+        settings *parent;
     public:
-        param();
-        param(std::string val);
         operator std::string() const;
         operator int() const;
         operator bool() const;
@@ -51,7 +75,7 @@ public:
 
         bool is_empty() const;
     };
-
+public:
     // Main functions
 
     /**
@@ -90,18 +114,12 @@ public:
          * Get constant setting wrapper
          * \param name Setting unique identifier
          */
-    const param & operator[](std::string const & name) const;
+    const param operator[](std::string const & name) const;
     /**
          * Get constant setting wrapper
          * \param name Setting unique identifier
          */
-    param & operator[](std::string const & name);
-
-private:
-    std::map<std::string, param> sett;
-    std::string path;
-    void deserialize();
-    void serialize();
+    param operator[](std::string const & name);
 };
 
 #endif // SETTINGS_H
