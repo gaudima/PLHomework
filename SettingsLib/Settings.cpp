@@ -9,7 +9,7 @@ cant_convert_to::cant_convert_to(const std::string &name, const std::string &typ
 
 incompatible_operands::incompatible_operands(const std::string &name, const std::string &op, const std::string &type)
     :std::runtime_error("Can't apply operation: \"" + op + "\" on param: \"" + name +
-                        "\"\nparam: " + name + "\" cannot be converted to type: \"" + type + "\"\n") {
+                        "\"\nparam: \"" + name + "\" cannot be converted to type: \"" + type + "\"\n") {
 }
 
 settings::param::param(std::string nam, std::string val, settings *par) {
@@ -249,9 +249,5 @@ const settings::param settings::operator[](std::string const & name) const {
 }
 
 settings::param settings::operator[](std::string const & name) {
-    try {
-        return param(name, sett.at(name), this);
-    } catch (...) {
-        throw no_such_param(name);
-    }
+    return param(name, sett[name], this);
 }
